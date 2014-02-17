@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ln -f $SSH_AUTH_SOCK /tmp/ssh-agent.sock
+while true; do sleep 10; done
