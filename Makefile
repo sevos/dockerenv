@@ -4,7 +4,7 @@ DOCKER_HOST := tcp://
 export DOCKER_HOST
 docker := bin/docker
 mount_prefix := /media
-running_containers := $(shell docker ps 2>&1)
+running_containers := $(shell bin/docker ps 2>&1)
 container_definitions := postgresql-dev ruby
 private_container_definitions := ruby-local
 BACKUP = $(shell ls -r1 backup | head -n1)
