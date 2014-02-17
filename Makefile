@@ -1,4 +1,4 @@
-REGISTRY := ameba.eax.pl:5000
+REGISTRY = ameba.eax.pl:5000
 
 DOCKER_HOST := tcp://
 export DOCKER_HOST
