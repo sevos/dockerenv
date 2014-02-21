@@ -50,8 +50,7 @@ apps/%:
 
 run-%: apps/%
 	bin/containerize_bundle $*
-	docker rm app-$* &>/dev/null || true
-	$(docker_run) --name=app-$* -t -i -v /media/apps/$*:/app -p 3000 -w /app app-$*-container /bin/bash -l -c "bundle && /bin/bash -l"
+	$(docker_run) --name=app-$* -rm -t -i -v /media/apps/$*:/app -p 3000 -w /app app-$*-container /bin/bash -l -c "bundle && /bin/bash -l"
 
 
 
