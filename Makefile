@@ -22,13 +22,14 @@ define vm_shell
 endef
 
 # Lifecycle
-up: vagrant-up forward-ssh-agent restore-inner apps
+up: vagrant-up restore-inner apps forward-ssh-agent
 destroy: backup-inner vagrant-destroy
 destroy-void: vagrant-destroy
 clean: destroy
 	rm -fr backup/* apps/*
 forward-ssh-agent:
-	vagrant ssh -- -f '/vagrant/bin/forward-ssh-agent'
+	(ps aux | grep -E 'ssh.*forward-ssh-agent' | grep -qv grep) || (vagrant ssh -- -f '/vagrant/bin/forward-ssh-agent' && sleep 3)
+
 apps: postgresql
 
 # Backup
@@ -46,13 +47,10 @@ rebuild-images:
 
 # Projects
 apps/%:
-	git clone git@github.com:bonusboxme/$*.git apps/$*
+	$(docker_run) -rm -t -v /media/apps:/apps $(REGISTRY)/ruby /bin/bash -l -c "git clone git@github.com:bonusboxme/$*.git /apps/$*"
 
 run-%: apps/%
-	bin/containerize_bundle $*
-	$(docker_run) --name=app-$* -rm -t -i -v /media/apps/$*:/app -p 3000 -w /app app-$*-container /bin/bash -l -c "bundle && /bin/bash -l"
-
-
+	bin/containerize_bundle $* && $(docker_run) --name=app-$* -rm -t -i -v /media/apps/$*:/app app-$*-container
 
 # helpers
 

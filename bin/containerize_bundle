@@ -3,5 +3,5 @@
 container_id=$(bin/docker run -d -i -v /tmp/ssh-agent.sock:/tmp/ssh-agent.sock -v /media/apps/$1:/app ameba.eax.pl:5000/ruby /bin/bash -l -c 'cd /app && bundle')
 echo "Container id: $container_id"
 bin/docker attach --sig-proxy=false $container_id
-bin/docker commit $container_id app-$1-container
+bin/docker commit --run='{"WorkingDir": "/app", "PortSpecs": ["3000"], "Env": ["SSH_AUTH_SOCK=/tmp/ssh-agent.sock"], "Cmd": ["/bin/bash", "-l", "-c", "bundle && /bin/bash -l"]}' $container_id app-$1-container
 bin/docker rm $container_id
