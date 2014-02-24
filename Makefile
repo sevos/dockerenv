@@ -10,7 +10,7 @@ private_container_definitions := ruby-local
 BACKUP = $(shell ls -r1 backup | head -n1)
 quiet := &>/dev/null
 
-docker_run := bin/docker run -v /tmp/ssh-agent.sock:/tmp/ssh-agent.sock
+docker_run := bin/docker run -v /usr/bin/docker:/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/ssh-agent.sock:/tmp/ssh-agent.sock
 
 define build-image
 	$(docker) build -rm -t=$(REGISTRY)/$1 containers/$1 && \
@@ -50,7 +50,7 @@ apps/%:
 	$(docker_run) -rm -t -v /media/apps:/apps $(REGISTRY)/ruby /bin/bash -l -c "git clone git@github.com:bonusboxme/$*.git /apps/$*"
 
 run-%: apps/%
-	bin/containerize_bundle $* && $(docker_run) --name=app-$* -rm -t -i -v /media/apps/$*:/app app-$*-container
+	bin/containerize_bundle $* && $(docker_run) --name=app-$* -rm -t -i -P -v /media/apps/$*:/app app-$*-container
 
 # helpers
 
@@ -71,5 +71,3 @@ postgresql:
 	-name postgresql \
 	$(REGISTRY)/postgresql-dev $(quiet) || \
 	$(docker) start postgresql $(quiet) || echo "Already running"
-
-retailers:
